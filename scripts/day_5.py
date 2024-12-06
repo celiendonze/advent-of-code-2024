@@ -1,8 +1,7 @@
 from collections import defaultdict
-from itertools import permutations
 from pathlib import Path
 
-# from random import shuffle
+import networkx as nx
 from tqdm.auto import tqdm
 
 day_5_input = Path("data/inputs/day_5/input.txt").read_text().strip().split("\n")
@@ -20,7 +19,7 @@ for line in day_5_input:
         pages.append([int(e) for e in line.split(",")])
 
 
-def is_page_valid(page):
+def is_page_valid(page: list[int]) -> bool:
     for i, e in enumerate(page[::-1]):
         if e in rules:
             must_be_after = rules[e]
@@ -39,21 +38,24 @@ for page in pages:
         s += page[len(page) // 2]  # middle element
 
 print("part 1:")
-print(s)
+print(s)  # 5248
 
 
-def sort_page(page):
-    sorted_page = []
-
+def sort_page(page: list[int]) -> list[int]:
+    graph = nx.DiGraph()
+    for k, v in rules.items():
+        for e in v:
+            if k in page and e in page:
+                graph.add_edge(k, e)
+    sorted_page = list(nx.topological_sort(graph))
     return sorted_page
 
 
 second_sum = 0
 for page in tqdm(unordered_pages):
-    for perm in tqdm(list(permutations(page))):
-        if is_page_valid(perm):
-            second_sum += perm[len(perm) // 2]
-            break
+    page = sort_page(page)
+    second_sum += page[len(page) // 2]
+
 
 print("part 2:")
-print(second_sum)
+print(second_sum)  # 4507
