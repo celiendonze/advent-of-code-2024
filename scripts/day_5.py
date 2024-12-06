@@ -1,8 +1,8 @@
 from collections import defaultdict
 from itertools import permutations
 from pathlib import Path
-from random import shuffle
 
+# from random import shuffle
 from tqdm.auto import tqdm
 
 day_5_input = Path("data/inputs/day_5/input.txt").read_text().strip().split("\n")
