@@ -38,6 +38,19 @@ for i, j in product(range(matrix.shape[0]), range(matrix.shape[1])):
 antinodes_matrix = np.zeros_like(matrix)
 antinodes_matrix.fill(".")
 
+
+def is_inside_matrix(pos: tuple[int, int], matrix: np.ndarray):
+    x, y = pos
+    return all(
+        [
+            x >= 0,
+            y >= 0,
+            x < matrix.shape[0],
+            y < matrix.shape[1],
+        ]
+    )
+
+
 for key, pos in tqdm(positions.items()):
     if len(pos) < 2:
         continue
@@ -48,49 +61,13 @@ for key, pos in tqdm(positions.items()):
         antinode_a = a + vec1
         antinode_b = b + vec2
 
-        if all(
-            [
-                antinode_a[0] >= 0,
-                antinode_a[1] >= 0,
-                antinode_a[0] < matrix.shape[0],
-                antinode_a[1] < matrix.shape[1],
-            ]
-        ):
-            # if matrix[antinode_a[0], antinode_a[1]] == ".":
-            #     matrix[antinode_a[0], antinode_a[1]] = "#"
+        if is_inside_matrix(antinode_a, antinodes_matrix):
             antinodes_matrix[antinode_a[0], antinode_a[1]] = "#"
-        if all(
-            [
-                antinode_b[0] >= 0,
-                antinode_b[1] >= 0,
-                antinode_b[0] < matrix.shape[0],
-                antinode_b[1] < matrix.shape[1],
-            ]
-        ):
-            # if matrix[antinode_b[0], antinode_b[1]] == ".":
-            #     matrix[antinode_b[0], antinode_b[1]] = "#"
+        if is_inside_matrix(antinode_b, antinodes_matrix):
             antinodes_matrix[antinode_b[0], antinode_b[1]] = "#"
 
 print("Part 1:")
 print(np.count_nonzero(antinodes_matrix == "#"))
-
-# solution = """
-# ......#....#
-# ...#....0...
-# ....#0....#.
-# ..#....0....
-# ....0....#..
-# .#....A.....
-# ...#........
-# #......#....
-# ........A...
-# .........A..
-# ..........#.
-# ..........#.
-# """.strip().split("\n")
-
-# for i, row in enumerate(matrix):
-#     print("".join(row), solution[i])
 
 # Part 2:
 antinodes_matrix = np.zeros_like(matrix)
@@ -101,50 +78,26 @@ for key, pos in tqdm(positions.items()):
         continue
     for combi in combinations(pos, 2):
         a, b = np.array(combi)
+        antinodes_matrix[a[0], a[1]] = "#"
+        antinodes_matrix[b[0], b[1]] = "#"
         vec1 = a - b
         vec2 = b - a
         antinode_a = a + vec1
         antinode_b = b + vec2
 
-        while all(
-            [
-                antinode_a[0] >= 0,
-                antinode_a[1] >= 0,
-                antinode_a[0] < matrix.shape[0],
-                antinode_a[1] < matrix.shape[1],
-            ]
-        ) or all(
-            [
-                antinode_b[0] >= 0,
-                antinode_b[1] >= 0,
-                antinode_b[0] < matrix.shape[0],
-                antinode_b[1] < matrix.shape[1],
-            ]
+        while is_inside_matrix(antinode_a, antinodes_matrix) or is_inside_matrix(
+            antinode_b, antinodes_matrix
         ):
-            if all(
-                [
-                    antinode_a[0] >= 0,
-                    antinode_a[1] >= 0,
-                    antinode_a[0] < matrix.shape[0],
-                    antinode_a[1] < matrix.shape[1],
-                ]
-            ):
-                # if matrix[antinode_a[0], antinode_a[1]] == ".":
-                #     matrix[antinode_a[0], antinode_a[1]] = "#"
+            if is_inside_matrix(antinode_a, antinodes_matrix):
                 antinodes_matrix[antinode_a[0], antinode_a[1]] = "#"
-            if all(
-                [
-                    antinode_b[0] >= 0,
-                    antinode_b[1] >= 0,
-                    antinode_b[0] < matrix.shape[0],
-                    antinode_b[1] < matrix.shape[1],
-                ]
-            ):
-                # if matrix[antinode_b[0], antinode_b[1]] == ".":
-                #     matrix[antinode_b[0], antinode_b[1]] = "#"
+
+            if is_inside_matrix(antinode_b, antinodes_matrix):
                 antinodes_matrix[antinode_b[0], antinode_b[1]] = "#"
             antinode_a += vec1
             antinode_b += vec2
 
 print("Part 2:")
 print(np.count_nonzero(antinodes_matrix == "#"))
+
+# for row in antinodes_matrix:
+#     print("".join(row))
