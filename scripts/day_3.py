@@ -30,6 +30,6 @@ for match in matches:
         s += int(mul_match[0]) * int(mul_match[1])
 
 
-print(matches)
+# print(matches)
 print("sum of mul (do and don't):")
 print(s)
